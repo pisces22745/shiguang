@@ -26,8 +26,9 @@
         <span>({{galleryNum}})</span>
         <router-link :to="{path:'home'}">+新书</router-link>
       </div>
-      <ul>
-        <li v-for="(item,index) in gaList">
+      <div v-if="gaList.length===0" class="empty">您还没有相册，快去制作吧~</div>
+      <ul class="book-list">
+        <li v-for="(item,index) in gaList" class="clearfix">
           <div class="cover">
             <router-link :to="{path:'preview',query: {id:item.id,isshare:1}}" class="preview">预览</router-link>
             <img :src="baseUrl+item.imgurl" alt="">
@@ -35,10 +36,9 @@
           </div>
           <div class="text">
             <h1>{{item.name}}</h1>
-            <p>{{item.pages}}</p>
-            <p>创建时间</p>
-            <p>{{item.date}}</p>
-            <p>{{index + 1}}</p>
+            <p class="pages">{{item.pages}}</p>
+            <p class="date">{{item.date}}</p>
+            <p class="index"><span v-if="index<10">0</span>{{index + 1}}</p>
             <router-link :to="{path:'edit',query:{gid:item.id,bookType:item.type}}" class="btn-edit">去编辑</router-link>
           </div>
         </li>
@@ -74,6 +74,7 @@
           if (res.status === 0) {
             this.headerImg = res.obj.headimgurl
             this.gaList = res.obj.galist
+            this.galleryNum = res.obj.gallerynum
           } else {
             Toast(res.message)
           }
@@ -166,59 +167,68 @@
     margin-bottom: 10px;
     ul {
       li {
-        position: relative;
         padding: 10px 0;
         border-bottom: 1px solid #eee;
-        &::before {
-          content: '';
-          display: inline-block;
-          vertical-align: middle;
-          width: 21px;
-          height: 21px;
-          margin-right: 10px;
-        }
-        &::after {
-          position: absolute;
-          top: 50%;
-          right: 15px;
-          margin-top: -4px;
-          content: '';
-          display: block;
-          width: 8px;
-          height: 8px;
-          -webkit-transform: rotate(45deg);
-          transform: rotate(45deg);
-          border-top: 1px solid #565656;
-          border-right: 1px solid #565656;
-        }
-        &.order {
-          &::before {
-            background: url("../../../static/image/icon_order.png") no-repeat center center/100%;
-          }
-        }
-        &.coupon {
-          &::before {
-            background: url("../../../static/image/icon_coupon.png") no-repeat center center/100%;
-          }
-        }
-        &.address {
-          &::before {
-            background: url("../../../static/image/icon_address.png") no-repeat center center/100%;
-          }
-        }
+
         &:last-child {
           border-bottom: none;
         }
         a {
+          position: relative;
+          display: block;
           vertical-align: middle;
           font-size: 14px;
           color: #666;
+          &::before {
+            content: '';
+            display: inline-block;
+            vertical-align: middle;
+            width: 21px;
+            height: 21px;
+            margin-right: 10px;
+          }
+          &::after {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            margin-top: -4px;
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
+            border-top: 1px solid #565656;
+            border-right: 1px solid #565656;
+          }
+        }
+        &.order {
+          a {
+            &::before {
+              background: url("../../../static/image/icon_order.png") no-repeat center center/100%;
+            }
+          }
+        }
+        &.coupon {
+          a {
+            &::before {
+              background: url("../../../static/image/icon_coupon.png") no-repeat center center/100%;
+            }
+          }
+        }
+        &.address {
+          a {
+            &::before {
+              background: url("../../../static/image/icon_address.png") no-repeat center center/100%;
+            }
+          }
         }
       }
     }
   }
 
   .bottom {
+    min-height: 3.4rem;
     padding: 0 0 0 15px;
     background-color: #fff;
     .title {
@@ -244,6 +254,142 @@
         margin-top: 2px;
         float: right;
         margin-right: 15px;
+        color: #e73828;
+      }
+    }
+    .empty{
+      text-align: center;
+      margin-top: 50px;
+      color: #999;
+    }
+    .book-list {
+      li {
+        position: relative;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        &:last-child {
+          border-bottom: none;
+        }
+        .cover {
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+          position: relative;
+          float: left;
+          width: 120px;
+          height: 154px;
+          margin-right: 15px;
+          padding: 5px;
+          &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            background-color: rgba(0, 0, 0, .5);
+          }
+          &::before {
+            content: '';
+            position: absolute;
+            bottom: 30px;
+            left: 10px;
+            width: 100px;
+            height: 1px;
+            z-index: 1;
+            background-color: #fff;
+          }
+          .preview {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+            padding: 5px;
+            font-size: 12px;
+            color: #fff;
+            z-index: 1;
+            &::before {
+              content: '';
+              display: inline-block;
+              vertical-align: middle;
+              margin-right: 4px;
+              width: 13px;
+              height: 13px;
+              background: url("../../../static/image/icon_magnifier_prev.png") no-repeat center center/100%;
+            }
+          }
+          .delete {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 18px;
+            height: 20px;
+            z-index: 1;
+            text-indent: -9999px;
+            padding: 5px 0;
+            -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+            background: url("../../../static/image/icon_trash.png") no-repeat center center/18px;
+          }
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+        }
+        .text {
+          float: left;
+          padding: 5px;
+          h1 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 5px;
+            &::before {
+              content: '【';
+            }
+            &::after {
+              content: '】';
+            }
+          }
+          p {
+            padding-left: 8px;
+            font-size: 16px;
+            &.pages {
+              margin-bottom: 12px;
+              &::after {
+                content: '页';
+              }
+            }
+            &.date {
+              margin-bottom: 10px;
+              &::before {
+                content: '创建时间';
+                display: block;
+                margin-bottom: 3px;
+              }
+            }
+            &.index {
+              position: absolute;
+              bottom: 15px;
+              right: 15px;
+              font-size: 12px;
+            }
+          }
+          .btn-edit {
+            display: block;
+            margin-left: 8px;
+            width: 120px;
+            height: 20px;
+            line-height: 20px;
+            border: 1px solid #e73828;
+            font-size: 16px;
+            color: #e73828;
+            background: transparent;
+            border-radius: 16px;
+            text-align: center;
+          }
+        }
       }
     }
   }

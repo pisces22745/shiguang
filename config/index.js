@@ -61,7 +61,7 @@ module.exports = {
   },
   start: {
     env: require('./start.env'),
-    port: 8080,
+    port: 8088,
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
