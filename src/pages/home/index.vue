@@ -38,7 +38,6 @@
 <script>
   import {headerImage} from '@/config/api'
   import {Swipe, SwipeItem} from 'mint-ui'
-  import 'mint-ui/lib/swipe/style.css'
 
   export default {
     data() {
@@ -219,6 +218,7 @@
     },
     mounted() {
       this.activeList = this.bookList.travel
+      console.log(this.$cookie)
       headerImage({
         openid: 'oxcqAwJAEWJ7Ncc4QiL_RYlOEaPw'
       }).then(res => {

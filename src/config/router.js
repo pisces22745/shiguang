@@ -14,6 +14,8 @@ const Photo = resolve => require(['@/pages/photo/index'], resolve)
 const Edit = resolve => require(['@/pages/photo/edit'], resolve)
 const Update = resolve => require(['@/pages/photo/update'], resolve)
 const User = resolve => require(['@/pages/user/user'], resolve)
+const Comment = resolve => require(['@/pages/comment/comment'], resolve)
+const Preview = resolve => require(['@/pages/preview/index'], resolve)
 
 Vue.use(Router)
 
@@ -29,11 +31,11 @@ export default new Router({
       component: Address,
       redirect: '/address/list',
       children: [{
-        path: '/list',
+        path: 'list',
         name: 'addressList',
         component: AddressList
       }, {
-        path: '/add',
+        path: 'add',
         name: 'addressAdd',
         component: AddressAdd
       }]
@@ -75,7 +77,16 @@ export default new Router({
       name: 'user',
       component: User
     }, {
+      path: '/comment',
+      name: 'comment',
+      component: Comment
+    }, {
+      path: '/preview',
+      name: 'preview',
+      component: Preview
+    }, {
       path: '*',
-      redirect: '/home'}
+      redirect: '/home'
+    }
   ]
 })
