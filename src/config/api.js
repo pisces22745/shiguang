@@ -33,3 +33,7 @@ export const deleteAlbum = params => {
 export const getPicList = params => {
   return axios.get(`${base}/p/piclist`, {params: params}).then(res => res.data)
 }
+// 生成内容页
+export const getPhotoList = params => {
+  return axios.post(`${base}/c/gp`, params).then(res => res.data)
+}
