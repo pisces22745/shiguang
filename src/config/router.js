@@ -16,6 +16,7 @@ const Update = resolve => require(['@/pages/photo/update'], resolve)
 const User = resolve => require(['@/pages/user/user'], resolve)
 const Comment = resolve => require(['@/pages/comment/comment'], resolve)
 const Preview = resolve => require(['@/pages/preview/index'], resolve)
+const Qrcode = resolve => require(['@/pages/qrcode/index'], resolve)
 
 Vue.use(Router)
 
@@ -85,8 +86,12 @@ export default new Router({
       name: 'preview',
       component: Preview
     }, {
+      path: '/qrcode',
+      name: 'qrcode',
+      component: Qrcode
+    }, {
       path: '*',
-      redirect: '/home'
+      redirect: '/qrcode'
     }
   ]
 })

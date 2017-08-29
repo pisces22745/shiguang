@@ -1,16 +1,10 @@
-import {GET_USERINFO} from './mutation-types'
+import {GET_USERINFO, SET_USERINFO} from './mutation-types'
+
 export default {
-  [GET_USERINFO](state, info) {
-    if (state.userInfo && (state.userInfo.username !== info.username)) {
-      return
-    }
-    if (!state.login) {
-      return
-    }
-    if (!info.message) {
-      state.userInfo = {...info}
-    } else {
-      state.userInfo = null
-    }
+  [GET_USERINFO](state) {
+    return state.userInfo
+  },
+  [SET_USERINFO](state, userInfo) {
+    state.userInfo = userInfo
   }
 }

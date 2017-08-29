@@ -27,29 +27,39 @@
         <router-link :to="{path:'home'}">+新书</router-link>
       </div>
       <div v-if="gaList.length===0" class="empty">您还没有相册，快去制作吧~</div>
-      <ul class="book-list">
+      <ul class="book-list" v-infinite-scroll="loadMore"
+          infinite-scroll-disabled="loading"
+          infinite-scroll-distance="10"
+          infinite-scroll-immediate-check="false">
         <li v-for="(item,index) in gaList" class="clearfix">
           <div class="cover">
             <router-link :to="{path:'preview',query: {id:item.id,isshare:1}}" class="preview">预览</router-link>
             <img :src="baseUrl+item.imgurl" alt="">
-            <span class="delete" @click="deleteAlbum(item.id)">删除</span>
+            <span class="delete" @click="deleteAlbum(item.id,index)">删除</span>
           </div>
           <div class="text">
             <h1>{{item.name}}</h1>
             <p class="pages">{{item.pages}}</p>
             <p class="date">{{item.date}}</p>
-            <p class="index"><span v-if="index<10">0</span>{{index + 1}}</p>
+            <p class="index"><span v-if="index<9">0</span>{{index + 1}}</p>
             <router-link :to="{path:'edit',query:{gid:item.id,bookType:item.type}}" class="btn-edit">去编辑</router-link>
           </div>
+        </li>
+        <li class="loading" v-if="infinate">
+          <span class="ball_line_rotate"></span>
+          <span>加载更多</span>
         </li>
       </ul>
     </div>
   </section>
 </template>
 <script>
-  import {getUserCenter, deleteAlbum} from '@/config/api'
-  import {Toast} from 'mint-ui'
+  import Vue from 'vue'
+  import {getUserCenter, deleteAlbum, getGalib} from '@/config/api'
+  import {InfiniteScroll, Toast, MessageBox} from 'mint-ui'
   import {mapState} from 'vuex'
+
+  Vue.use(InfiniteScroll)
 
   export default {
     data() {
@@ -58,42 +68,79 @@
         galleryNum: 0,
         gaList: [],
         page: 1,
-        pageSize: 5
+        pageSize: 5,
+        loading: false,
+        infinate: true
       }
     },
     computed: {
-      ...mapState(['baseUrl'])
+      ...mapState(['baseUrl', 'userInfo']),
+      openid: function () {
+        return this.userInfo.openid
+      }
     },
     methods: {
       getUserCenter: function () {
         getUserCenter({
-          openid: 'oxcqAwJAEWJ7Ncc4QiL_RYlOEaPw',
+          openid: this.openid,
           page: this.page,
           pagesize: this.pageSize
         }).then(res => {
           if (res.status === 0) {
             this.headerImg = res.obj.headimgurl
-            this.gaList = res.obj.galist
             this.galleryNum = res.obj.gallerynum
           } else {
             Toast(res.message)
           }
         })
       },
-      deleteAlbum(id) {
-        deleteAlbum({
-          id: id
-        }).then(res => {
-          if (res.status === 0) {
-            Toast('删除成功')
-          } else {
-            Toast(res.message)
-          }
-        })
+      deleteAlbum(id, index) {
+        let _this = this
+        MessageBox.confirm('确定删除相册?').then(action => {
+          deleteAlbum({
+            id: id,
+            openid: _this.openid,
+            page: _this.page,
+            pagesize: _this.pageSize
+          }).then(res => {
+            if (res.status === 0) {
+              _this.gaList.splice(index, 1)
+              Toast('删除成功')
+            } else {
+              Toast(res.message)
+            }
+          })
+        });
+      },
+      loadMore: function () {
+        let _this = this
+        this.loading = true
+        setTimeout(() => {
+          _this.getList()
+          _this.loading = false
+        }, 500);
+      },
+      getList: function () {
+        if (this.infinate) {
+          getGalib({
+            page: this.page,
+            pagesize: this.pageSize,
+            openid: this.openid
+          }).then(res => {
+            if (res.status === 0) {
+              this.infinate = res.obj.length === this.pageSize
+              this.gaList.push.apply(this.gaList, res.obj);
+              this.page++
+            } else {
+              Toast(res.message)
+            }
+          })
+        }
       }
     },
     mounted() {
       this.getUserCenter()
+      this.getList()
     }
   }
 </script>
@@ -257,7 +304,7 @@
         color: #e73828;
       }
     }
-    .empty{
+    .empty {
       text-align: center;
       margin-top: 50px;
       color: #999;
@@ -269,6 +316,64 @@
         border-bottom: 1px solid #eee;
         &:last-child {
           border-bottom: none;
+        }
+        &.loading {
+          text-align: center;
+          color: #999;
+          span {
+            vertical-align: middle;
+            &.ball_line_rotate {
+              position: relative;
+              display: inline-block;
+              width: 20px;
+              height: 20px;
+              margin-right: 5px;
+              &::before, &::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 0;
+                margin-top: -10px;
+                -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                border: 2px solid #000;
+                background-color: transparent;
+              }
+              &::before {
+                opacity: 0.3;
+              }
+              &::after {
+                border-color: transparent;
+                border-right-color: #000;
+                -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+                -webkit-animation: ball_line_rotate .8s linear infinite;
+                animation: ball_line_rotate .8s linear infinite;
+              }
+
+              @keyframes ball_line_rotate {
+                25% {
+                  -webkit-transform: rotate(90DEG);
+                  transform: rotate(90DEG);
+                }
+                50% {
+                  -webkit-transform: rotate(180DEG);
+                  transform: rotate(180DEG);
+                }
+                75% {
+                  -webkit-transform: rotate(270DEG);
+                  transform: rotate(270DEG);
+                }
+                100% {
+                  -webkit-transform: rotate(360DEG);
+                  transform: rotate(360DEG);
+                }
+              }
+            }
+          }
         }
         .cover {
           -webkit-box-sizing: border-box;

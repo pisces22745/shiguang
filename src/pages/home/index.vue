@@ -27,7 +27,7 @@
             <div class="clearfix">
               <span class="price">{{item.price}}</span>
               <span class="discount">{{item.discount}}</span>
-              <button>去制作</button>
+              <button @click="createAlbum(item)">去制作</button>
             </div>
           </div>
         </li>
@@ -36,8 +36,9 @@
   </section>
 </template>
 <script>
-  import {headerImage} from '@/config/api'
-  import {Swipe, SwipeItem} from 'mint-ui'
+  import {headerImage, createAlbum} from '@/config/api'
+  import {Swipe, SwipeItem, Toast} from 'mint-ui'
+  import {mapState} from 'vuex'
 
   export default {
     data() {
@@ -191,11 +192,15 @@
             bookType: 'postcard01'
           }]
         },
-        activeList: []
+        activeList: [],
+        openid: ''
       }
     },
+    computed: {
+      ...mapState(['userInfo'])
+    },
     methods: {
-      addActive(index) {
+      addActive: function (index) {
         this.active = index
         switch (index) {
           case 0:
@@ -214,15 +219,57 @@
             this.activeList = this.bookList.postcard
             break
         }
+      },
+      createAlbum: function (item) {
+        createAlbum({
+          author: '作者',
+          name: this.menu[this.active],
+          type: item.bookType,
+          openid: this.openid,
+          date: '',
+          gid: ''
+        }).then(res => {
+          if (res.status === 0) {
+            this.$router.push({
+              path: 'picture',
+              query: {
+                openid: this.openid,
+                bookType: item.bookType,
+                gid: res.obj.galleryid,
+                beforeid: res.obj.id,
+                pagetype: 2,
+                temptype: 1,
+                pretempid: '',
+                nexttempid: '',
+                situation: 1
+              }
+            })
+          } else {
+            Toast(res.message)
+          }
+        })
+      },
+      getOpenid: function () {
+        if (!this.userInfo) {
+          let openid = this.$router.query.openid
+          this.$cookie.set('userInfo', {'openid': openid})
+          this.openid = openid
+        } else {
+          this.openid = this.userInfo.openid
+        }
       }
     },
     mounted() {
       this.activeList = this.bookList.travel
-      console.log(this.$cookie)
+      this.getOpenid()
       headerImage({
-        openid: 'oxcqAwJAEWJ7Ncc4QiL_RYlOEaPw'
+        openid: this.openid
       }).then(res => {
-        this.headerImg = res.obj
+        if (res.status === 0) {
+          this.headerImg = res.obj
+        } else {
+          Toast(res.message)
+        }
       })
     },
     components: {
@@ -269,20 +316,15 @@
       }
     }
     .header-img {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      /*display: block;*/
-      width: 30px;
-      height: 30px;
-      overflow: hidden;
-      border: 1px solid #fff;
-      border-radius: 50%;
       img {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
+        top: 6px;
+        right: 6px;
+        width: 30px;
+        height: 30px;
+        border: 1px solid #fff;
+        border-radius: 50%;
+        overflow: hidden;
       }
     }
   }
