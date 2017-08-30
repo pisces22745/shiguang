@@ -21,7 +21,7 @@
           if (res.obj === 0) {
             this.headerImg = res.obj
           }else{
-            Toast(res.message)
+            Toast(res.message ? res.message : '请求错误')
           }
         })
       }

@@ -34,6 +34,24 @@ export const getPicList = params => {
   return axios.get(`${base}/p/piclist`, {params: params}).then(res => res.data)
 }
 // 生成内容页
-export const getPhotoList = params => {
+export const createPhotoList = params => {
   return axios.post(`${base}/c/gp`, params).then(res => res.data)
+}
+// 更换封面
+export const changeCover = params => {
+  return axios.get(`${base}/c/gallery`, {params: params}).then(res => res.data)
+}
+
+// 获取内容页列表
+export const getPhotoList = params => {
+  return axios.get(`${base}/c/pl`, {params: params}).then(res => res.data)
+}
+// 删除一张内容页
+export const deletePage = params => {
+  return axios.post(`${base}/c/dp`, params).then(res => res.data)
+}
+
+// 获取修改内容页内容
+export const getUpdatePage = params => {
+  return axios.get(`${base}/c/gpa`, {params: params}).then(res => res.data)
 }

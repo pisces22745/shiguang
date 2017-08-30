@@ -234,7 +234,7 @@
               path: 'picture',
               query: {
                 openid: this.openid,
-                bookType: item.bookType,
+                type: item.type,
                 gid: res.obj.galleryid,
                 beforeid: res.obj.id,
                 pagetype: 2,
@@ -245,7 +245,7 @@
               }
             })
           } else {
-            Toast(res.message)
+            Toast(res.message ? res.message : '请求错误')
           }
         })
       },
@@ -268,7 +268,7 @@
         if (res.status === 0) {
           this.headerImg = res.obj
         } else {
-          Toast(res.message)
+          Toast(res.message ? res.message : '请求错误')
         }
       })
     },

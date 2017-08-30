@@ -13,36 +13,49 @@
         <li v-for="(datepic,indexDate) in obj.datepics">
           <div class="title clearfix">
             <span class="date">{{datepic.date}}</span>
-            <span class="select-all" :class="{active:selectAll}" v-if="indexDate===0"
-                  @click="selectAll=!selectAll">全选</span>
+            <span class="select-all" :class="{active:selectAllFlag}" v-if="indexDate===0"
+                  @click="selectAll">全选</span>
           </div>
           <ul class="pic-list clearfix">
-            <li v-for="(picture,indexP) in datepic.picList">
-              <img :src="obj.baseurl+openid+'/'+picture.id+'?'+obj.thumbset+'&'+picture.token+picture.key" alt="">
-              <span @click="activePic($event,indexDate,indexP)">{{picture.active}}1111</span>
+            <li v-for="(picture,indexP) in datepic.picList" :key="picture.id">
+              <img :src="obj.baseurl+openid+'/'+picture.id+'?'+obj.thumbset+'&'+picture.token+picture.key"
+                   alt="">
+
+              <span class="icon-select" :class="{active:picture.active}"
+                    @click="activePic($event,picture)"></span>
             </li>
           </ul>
         </li>
       </ul>
     </div>
-    <button :class="{active:activeBtn}" @click="getPhotoList">下一步</button>
+    <button :class="{active:selected.length>0}" @click="getPhotoList">下一步</button>
   </section>
 </template>
 <script>
-  import {getPicList, getPhotoList} from '@/config/api'
-  import {Toast} from 'mint-ui'
+  import Vue from 'vue'
+  import {getPicList, createPhotoList} from '@/config/api'
+  import {MessageBox, Toast, Lazyload} from 'mint-ui'
   import {mapState} from 'vuex'
 
+  Vue.use(Lazyload);
   export default {
     data() {
       return {
         picNum: 0,
         selected: [],
-        selectAll: false,
+        selectAllFlag: false,
         obj: {},
         page: 1,
         pageSize: 16,
-        activeBtn: false
+        activeBtn: false,
+        list: [
+          'http://fuss10.elemecdn.com/b/18/0678e57cb1b226c04888e7f244c20jpeg.jpeg',
+          'http://fuss10.elemecdn.com/3/1e/42634e29812e6594c98a89e922c60jpeg.jpeg',
+          'http://fuss10.elemecdn.com/1/c5/95c37272d3e554317dcec1e17a9f5jpeg.jpeg',
+          'http://fuss10.elemecdn.com/7/85/e478e4b26af74f4539c79f31fde80jpeg.jpeg',
+          'http://fuss10.elemecdn.com/b/df/b630636b444346e38cef6c59f6457jpeg.jpeg',
+          'http://fuss10.elemecdn.com/7/a5/596ab03934612236f807b92906fd8jpeg.jpeg'
+        ]
       }
     },
     computed: {
@@ -52,6 +65,24 @@
       },
       gid: function () {
         return this.$router.currentRoute.query.gid
+      },
+      type: function () {
+        return this.$router.currentRoute.query.type
+      },
+      beforeid: function () {
+        return this.$router.currentRoute.query.beforeid
+      },
+      pagetype: function () {
+        return this.$router.currentRoute.query.pagetype
+      },
+      ptype: function () {
+        return this.$router.currentRoute.query.ptype
+      },
+      pretempid: function () {
+        return this.$router.currentRoute.query.pretempid
+      },
+      nexttempid: function () {
+        return this.$router.currentRoute.query.nexttempid
       }
     },
     methods: {
@@ -66,16 +97,67 @@
             this.obj = res.obj
             this.page++
           } else {
-            Toast(res.message)
+            Toast(res.message ? res.message : '请求错误')
           }
         })
       },
       getPhotoList: function () {
+        createPhotoList({
+          gid: this.gid,
+          type: this.type,
+          openid: this.openid,
+          beforeid: this.beforeid,
+          pagetype: this.pagetype, //页面类型：1封面，2普通页面
+          ptype: this.temptype, //模板类型：1普通模板，2文字模板，3图片模板
+          pics: this.selected,
+          pretempid: this.pretempid, //前一个页面的模板id
+          nexttempid: this.nexttempid //后一个页面的模板id
+        }).then(res => {
+          if (res.status === 0) {
+            console.log(res.obj)
+            this.$router.push({path: '/edit', query: {gid: this.gid, type: this.type}})
+          } else {
+            Toast(res.message ? res.message : '请求错误')
+          }
+        })
+      },
+      activePic: function ($event, picture) {
+        if ($event.target.className.indexOf('active') > 0) {
+          $event.target.className = 'icon-select'
+          let index = this.selected.findIndex(function (element) {
+            return element.url === picture.id;
+          })
+          this.selected.splice(index, 1)
+        } else {
+          $event.target.className = 'icon-select active'
+          this.selected.push({
+            hov: picture.hov,
+            url: picture.id
+          })
+        }
 
       },
-      activePic: function ($event, indexDate, indexP) {
-        $event.target.className = 'active'
-        this.activeBtn = this.selected.length > 0
+      selectAll: function () {
+        this.selectAllFlag = !this.selectAllFlag
+        let domList = document.getElementsByClassName('icon-select')
+        if (this.selectAllFlag) {
+          for (let i = 0; i < domList.length; i++) {
+            domList[i].className = 'icon-select active'
+          }
+        } else {
+          for (let i = 0; i < domList.length; i++) {
+            domList[i].className = 'icon-select'
+          }
+        }
+        for (let i = 0; i < this.obj.datepics.length; i++) {
+          for (let j = 0; j < this.obj.datepics[i].picList.length; j++) {
+            let pic = this.obj.datepics[i].picList[j]
+            this.selected.push({
+              hov: pic.hov,
+              url: pic.id
+            })
+          }
+        }
       }
     },
     mounted() {
@@ -97,17 +179,20 @@
       width: 100%;
       background-color: #fff;
       h1 {
-        padding: 8px 0;
+        height: 40px;
+        line-height: 40px;
         text-align: center;
         color: #e73828;
         font-size: 15px;
         font-weight: normal;
         border-bottom: 1px solid #e73828;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
       }
     }
     .middle {
       position: fixed;
-      top: 37px;
+      top: 41px;
       left: 0;
       z-index: 1;
       width: 100%;
@@ -166,7 +251,7 @@
       }
     }
     .bottom {
-      margin-top: 140px;
+      margin: 140px 0 52px;
       padding: 0 15px;
       .date-list {
         li {
@@ -203,9 +288,18 @@
             }
           }
           .pic-list {
+            display: flex;
+            flex-flow: row wrap;
             padding: 5px 0;
             li {
-              float: left;
+              -webkit-box-sizing: border-box;
+              box-sizing: border-box;
+              position: relative;
+              width: .8rem;
+              height: .8rem;
+              margin-right: calc(~"(100% - .8rem*4)" / 3);
+              margin-bottom: calc(~"(100% - .8rem*4)" / 3);
+              border: 1px solid #e1e1e1;
               img {
                 width: 100%;
                 height: 100%;
@@ -214,9 +308,34 @@
               &:nth-child(5n-1) {
                 margin-right: 0;
               }
+              .icon-select {
+                position: absolute;
+                bottom: 8px;
+                right: 8px;
+                width: 22px;
+                height: 22px;
+                background: url("../../../static/image/icon_check_white.png") no-repeat center center/100%;
+                &.active {
+                  background: url("../../../static/image/icon_check_pink.png") no-repeat center center/100%;
+                }
+              }
             }
           }
         }
+      }
+    }
+    & > button {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      border: none;
+      height: 42px;
+      color: #fff;
+      font-size: 16px;
+      background-color: #c1c1c1;
+      &.active {
+        background-color: #e73828;
       }
     }
   }

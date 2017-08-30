@@ -13,14 +13,14 @@ import '@/style/base/common.less'
 import '@/util/fontset'
 import VueCookie from 'vue-cookie'
 // Tell Vue to use the plugin
-Vue.use(VueCookie);
+Vue.use(VueCookie)
 Vue.config.productionTip = false
 const whiteList = ['/home', '/preview', '/qrcode'] // 不需要登陆的页面
 
 router.beforeEach(function (to, from, next) {
   if (process.env.NODE_ENV === 'development') {
     store.commit('SET_USERINFO', {
-      openid: "oxcqAwJAEWJ7Ncc4QiL_RYlOEaPw"
+      openid: 'oxcqAwJAEWJ7Ncc4QiL_RYlOEaPw'
     })
     next()
   } else {
@@ -36,7 +36,6 @@ router.beforeEach(function (to, from, next) {
     }
   }
 })
-
 
 /* eslint-disable no-new */
 new Vue({

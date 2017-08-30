@@ -10,7 +10,6 @@ const Gallery = resolve => require(['@/pages/gallery/gallery'], resolve)
 const Order = resolve => require(['@/pages/order/list'], resolve)
 const Payment = resolve => require(['@/pages/pay/payment'], resolve)
 const Picture = resolve => require(['@/pages/picture/picture'], resolve)
-const Photo = resolve => require(['@/pages/photo/index'], resolve)
 const Edit = resolve => require(['@/pages/photo/edit'], resolve)
 const Update = resolve => require(['@/pages/photo/update'], resolve)
 const User = resolve => require(['@/pages/user/user'], resolve)
@@ -61,18 +60,13 @@ export default new Router({
       name: 'picture',
       component: Picture
     }, {
-      path: '/photo',
-      name: 'photo',
-      component: Photo,
-      children: [{
-        path: '/edit',
-        name: 'edit',
-        component: Edit
-      }, {
-        path: '/update',
-        name: 'update',
-        component: Update
-      }]
+      path: '/edit',
+      name: 'edit',
+      component: Edit
+    }, {
+      path: '/update',
+      name: 'update',
+      component: Update
     }, {
       path: '/user',
       name: 'user',

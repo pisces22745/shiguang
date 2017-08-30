@@ -42,7 +42,7 @@
             <p class="pages">{{item.pages}}</p>
             <p class="date">{{item.date}}</p>
             <p class="index"><span v-if="index<9">0</span>{{index + 1}}</p>
-            <router-link :to="{path:'edit',query:{gid:item.id,bookType:item.type}}" class="btn-edit">去编辑</router-link>
+            <router-link :to="{path:'edit',query:{gid:item.id,type:item.type}}" class="btn-edit">去编辑</router-link>
           </div>
         </li>
         <li class="loading" v-if="infinate">
@@ -90,7 +90,7 @@
             this.headerImg = res.obj.headimgurl
             this.galleryNum = res.obj.gallerynum
           } else {
-            Toast(res.message)
+            Toast(res.message ? res.message : '请求错误')
           }
         })
       },
@@ -107,7 +107,7 @@
               _this.gaList.splice(index, 1)
               Toast('删除成功')
             } else {
-              Toast(res.message)
+              Toast(res.message ? res.message : '请求错误')
             }
           })
         });
@@ -132,7 +132,7 @@
               this.gaList.push.apply(this.gaList, res.obj);
               this.page++
             } else {
-              Toast(res.message)
+              Toast(res.message ? res.message : '请求错误')
             }
           })
         }
@@ -147,6 +147,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
   #user {
+    background-color: #f5f5f5;
     .top {
       position: relative;
       border-top: 2px solid #e73828;
