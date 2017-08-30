@@ -5,6 +5,7 @@ export default {
     return state.userInfo
   },
   [SET_USERINFO](state, userInfo) {
-    state.userInfo = userInfo
+    state.userInfo = JSON.parse(userInfo)
+
   }
 }

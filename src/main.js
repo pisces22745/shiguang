@@ -15,13 +15,13 @@ import VueCookie from 'vue-cookie'
 // Tell Vue to use the plugin
 Vue.use(VueCookie)
 Vue.config.productionTip = false
-const whiteList = ['/home', '/preview', '/qrcode'] // 不需要登陆的页面
+const whiteList = ['/', '/home', '/preview', '/qrcode'] // 不需要登陆的页面
 
 router.beforeEach(function (to, from, next) {
   if (process.env.NODE_ENV === 'development') {
-    store.commit('SET_USERINFO', {
+    store.commit('SET_USERINFO', JSON.stringify({
       openid: 'oxcqAwJAEWJ7Ncc4QiL_RYlOEaPw'
-    })
+    }))
     next()
   } else {
     if (VueCookie.get('userInfo')) {  // 已关注

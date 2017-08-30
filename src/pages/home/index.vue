@@ -249,28 +249,32 @@
           }
         })
       },
+      getHeaderImage: function () {
+        headerImage({
+          openid: this.openid
+        }).then(res => {
+          if (res.status === 0) {
+            this.headerImg = res.obj
+          } else {
+            Toast(res.message ? res.message : '请求错误')
+          }
+        })
+      },
       getOpenid: function () {
-        if (!this.userInfo) {
-          let openid = this.$router.query.openid
-          this.$cookie.set('userInfo', {'openid': openid})
+        if (!this.userInfo.openid) {
+          let openid = this.$router.currentRoute.query.openid
+          this.$cookie.set('userInfo', JSON.stringify({'openid': openid}))
           this.openid = openid
         } else {
           this.openid = this.userInfo.openid
         }
+        this.getHeaderImage()
+
       }
     },
     mounted() {
       this.activeList = this.bookList.travel
       this.getOpenid()
-      headerImage({
-        openid: this.openid
-      }).then(res => {
-        if (res.status === 0) {
-          this.headerImg = res.obj
-        } else {
-          Toast(res.message ? res.message : '请求错误')
-        }
-      })
     },
     components: {
       'mt-swipe': Swipe,

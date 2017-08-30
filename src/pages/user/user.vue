@@ -76,11 +76,13 @@
     computed: {
       ...mapState(['baseUrl', 'userInfo']),
       openid: function () {
+        console.log(this.userInfo.openid)
         return this.userInfo.openid
       }
     },
     methods: {
       getUserCenter: function () {
+        console.log(this.openid)
         getUserCenter({
           openid: this.openid,
           page: this.page,
