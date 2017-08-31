@@ -74,3 +74,7 @@ export const cancelOrder = params => {
 export const getAddressList = params => {
   return axios.get(`${base}/a/list`, {params: params}).then(res => res.data)
 }
+// 删除地址
+export const deleteAddress = params => {
+  return axios.get(`${base}/a/delete`, {params: params}).then(res => res.data)
+}

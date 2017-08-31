@@ -110,6 +110,7 @@
               Toast(res.message ? res.message : '请求错误')
             }
           })
+        }).catch(res => {
         })
       },
       loadMore: function () {

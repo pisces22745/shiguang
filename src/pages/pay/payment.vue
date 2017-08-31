@@ -1,7 +1,7 @@
 <template>
   <section id="pay">
     <div class="top">
-      <span class="icon-back"></span>
+      <span class="icon-back" @click="$router.go(-1)"></span>
       <span class="book-name">{{gallery.name}}</span>
       <span class="service"></span>
     </div>
@@ -140,27 +140,29 @@
       z-index: 1;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       border-bottom: 1px solid #e73828;
       height: 40px;
+      line-height: 40px;
       padding: 0 12px;
+      text-align: center;
       background-color: #fff;
-      .icon-back {
-        width: 20px;
-        height: 20px;
-        background: url("../../../static/image/icon_book_index.png") no-repeat center center/100%;
-      }
       .book-name {
-        font-size: 14px;
+        display: inline-block;
+        width: 70%;
+        margin: 0 auto;
+        text-align: center;
         color: #e73828;
+        font-size: 14px;
         &::after {
           content: '作品';
           font-size: 12px;
         }
       }
       .service {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        margin-top: -10px;
         width: 20px;
         height: 20px;
         background: url("../../../static/image/icon_service.png") no-repeat center center/100%;
