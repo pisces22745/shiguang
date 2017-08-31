@@ -107,14 +107,13 @@
           type: this.type,
           openid: this.openid,
           beforeid: this.beforeid,
-          pagetype: this.pagetype, //页面类型：1封面，2普通页面
-          ptype: this.temptype, //模板类型：1普通模板，2文字模板，3图片模板
+          pagetype: this.pagetype, // 页面类型：1封面，2普通页面
+          ptype: this.temptype, // 模板类型：1普通模板，2文字模板，3图片模板
           pics: this.selected,
-          pretempid: this.pretempid, //前一个页面的模板id
-          nexttempid: this.nexttempid //后一个页面的模板id
+          pretempid: this.pretempid, // 前一个页面的模板id
+          nexttempid: this.nexttempid // 后一个页面的模板id
         }).then(res => {
           if (res.status === 0) {
-            console.log(res.obj)
             this.$router.push({path: '/edit', query: {gid: this.gid, type: this.type}})
           } else {
             Toast(res.message ? res.message : '请求错误')
@@ -161,7 +160,6 @@
       }
     },
     mounted() {
-      let _his = this
       this.getPicList()
     }
   }

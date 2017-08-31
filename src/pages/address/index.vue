@@ -1,5 +1,7 @@
 <template>
-  <div>地址</div>
+  <div>
+    <router-view></router-view>
+  </div>
 </template>
 <script>
 </script>

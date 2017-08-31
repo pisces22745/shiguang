@@ -6,6 +6,5 @@ export default {
   },
   [SET_USERINFO](state, userInfo) {
     state.userInfo = JSON.parse(userInfo)
-
   }
 }

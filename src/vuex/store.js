@@ -8,7 +8,7 @@ Vue.use(Vuex)
 // 应用初始状态
 const state = {
   login: false,
-  userInfo: null,
+  userInfo: {},
   baseUrl: 'http://personalize.hzaiyin.cn/API/Files/Covers/'
 }
 

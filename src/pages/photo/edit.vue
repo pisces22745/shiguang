@@ -105,12 +105,14 @@
         if (this.type.indexOf('lomo') < 0 && this.type.indexOf('postage') < 0) {
           if (this.photoList.length < 21) {
             Toast('亲，内页在20页以上才可以打印哦！')
+          } else {
+            this.$router.push({path: 'pay', query: {gid: this.gid, type: this.type}})
           }
         } else {
           if (this.photoList.length < 10) {
             Toast('亲，在10页以上才可以打印哦！')
           } else {
-            this.$router.push({path: 'pay'})
+            this.$router.push({path: 'pay', query: {gid: this.gid, type: this.type}})
           }
         }
       }

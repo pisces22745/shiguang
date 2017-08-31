@@ -55,3 +55,22 @@ export const deletePage = params => {
 export const getUpdatePage = params => {
   return axios.get(`${base}/c/gpa`, {params: params}).then(res => res.data)
 }
+
+// 获取支付页面信息
+export const getCheck = params => {
+  return axios.post(`${base}/o/check`, params).then(res => res.data)
+}
+
+// 获取订单列表
+export const getOrderList = params => {
+  return axios.get(`${base}/o/list`, {params: params}).then(res => res.data)
+}
+// 取消订单
+export const cancelOrder = params => {
+  return axios.post(`${base}/o/update`, params).then(res => res.data)
+}
+
+// 获取地址列表
+export const getAddressList = params => {
+  return axios.get(`${base}/a/list`, {params: params}).then(res => res.data)
+}

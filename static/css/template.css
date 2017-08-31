@@ -3312,20 +3312,20 @@
     border-left: 0;
 }
 
-.block {
+.template .block {
     width: 6.6%;
     height: 4.7%;
 }
 
-.block-red {
+.template .block-red {
     background-color: #f8c9c8;
 }
 
-.block-yellow {
+.template .block-yellow {
     background-color: #f8f9cc;
 }
 
-.block-blue {
+.template .block-blue {
     background-color: #ceeaee;
 }
 

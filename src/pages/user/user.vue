@@ -76,13 +76,11 @@
     computed: {
       ...mapState(['baseUrl', 'userInfo']),
       openid: function () {
-        console.log(this.userInfo.openid)
         return this.userInfo.openid
       }
     },
     methods: {
       getUserCenter: function () {
-        console.log(this.openid)
         getUserCenter({
           openid: this.openid,
           page: this.page,
@@ -112,7 +110,7 @@
               Toast(res.message ? res.message : '请求错误')
             }
           })
-        });
+        })
       },
       loadMore: function () {
         let _this = this
@@ -120,7 +118,7 @@
         setTimeout(() => {
           _this.getList()
           _this.loading = false
-        }, 500);
+        }, 500)
       },
       getList: function () {
         if (this.infinate) {
@@ -320,64 +318,6 @@
           border-bottom: 1px solid #eee;
           &:last-child {
             border-bottom: none;
-          }
-          &.loading {
-            text-align: center;
-            color: #999;
-            span {
-              vertical-align: middle;
-              &.ball_line_rotate {
-                position: relative;
-                display: inline-block;
-                width: 20px;
-                height: 20px;
-                margin-right: 5px;
-                &::before, &::after {
-                  content: '';
-                  position: absolute;
-                  top: 50%;
-                  left: 0;
-                  margin-top: -10px;
-                  -webkit-box-sizing: border-box;
-                  box-sizing: border-box;
-                  width: 100%;
-                  height: 100%;
-                  border-radius: 50%;
-                  border: 2px solid #000;
-                  background-color: transparent;
-                }
-                &::before {
-                  opacity: 0.3;
-                }
-                &::after {
-                  border-color: transparent;
-                  border-right-color: #000;
-                  -webkit-animation-fill-mode: both;
-                  animation-fill-mode: both;
-                  -webkit-animation: ball_line_rotate .8s linear infinite;
-                  animation: ball_line_rotate .8s linear infinite;
-                }
-
-                @keyframes ball_line_rotate {
-                  25% {
-                    -webkit-transform: rotate(90DEG);
-                    transform: rotate(90DEG);
-                  }
-                  50% {
-                    -webkit-transform: rotate(180DEG);
-                    transform: rotate(180DEG);
-                  }
-                  75% {
-                    -webkit-transform: rotate(270DEG);
-                    transform: rotate(270DEG);
-                  }
-                  100% {
-                    -webkit-transform: rotate(360DEG);
-                    transform: rotate(360DEG);
-                  }
-                }
-              }
-            }
           }
           .cover {
             -webkit-box-sizing: border-box;
