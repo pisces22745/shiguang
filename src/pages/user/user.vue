@@ -2,7 +2,7 @@
   <section id="user">
     <div class="top">
       <router-link :to="{path: 'home'}" class="home">主页</router-link>
-      <router-link :to="{path: 'comment'}" class="comment">评论</router-link>
+      <!--<router-link :to="{path: 'comment'}" class="comment">评论</router-link>-->
       <div class="header-img">
         <img :src="headerImg" alt="头像">
       </div>

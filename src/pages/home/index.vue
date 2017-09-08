@@ -6,7 +6,7 @@
           <img :src="item" alt="">
         </mt-swipe-item>
       </mt-swipe>
-      <router-link class="title-text" :to="{path: 'gallery'}">他们的书</router-link>
+      <!--<router-link class="title-text" :to="{path: 'gallery'}">他们的书</router-link>-->
       <router-link class="header-img" :to="{path: 'user'}">
         <img :src="headerImg" alt="">
       </router-link>

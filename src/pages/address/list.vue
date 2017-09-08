@@ -6,7 +6,10 @@
     </div>
     <div class="bottom">
       <div class="none" v-if="addressList.length===0"></div>
-      <ul class="addresses">
+      <ul class="addresses" v-infinite-scroll="loadMore"
+          infinite-scroll-disabled="loading"
+          infinite-scroll-distance="10"
+          infinite-scroll-immediate-check="false">
         <li v-for="(item,index) in addressList">
           <div class="item-top">
             <span>{{item.consignee}}</span>
@@ -14,22 +17,28 @@
             <p>{{item.prov}}{{item.city}}{{item.area}}{{item.address}}</p>
           </div>
           <div class="item-bottom clearfix">
-            <div class="fl default" :class="{active:item.isdef===1}">设为默认</div>
+            <div class="fl default" @click="setAddressDefault(item.id)" :ref="item.isdef===1?'active':''"
+                 :data-id="index"
+                 :class="{active:item.isdef===1}">设为默认
+            </div>
             <div class="fr">
-              <router-link :to="{path:'add',query:{id:item.id,type:'manage'}}">编辑</router-link>
+              <router-link :to="{path:'add',query:{id:item.id,isDef: item.isdef}}">编辑</router-link>
               <span @click="deleteAddress(item.id,index)">删除</span>
             </div>
           </div>
         </li>
       </ul>
     </div>
-    <router-link :to="{path:'/address/add'}" class="btn-add">新增地址</router-link>
+    <router-link :to="{path:'/address/add',query:{isDef:addressList.length===0?1:0}}" class="btn-add">新增地址</router-link>
   </section>
 </template>
 <script>
-  import {getAddressList, deleteAddress} from '@/config/api'
+  import Vue from 'vue'
+  import {getAddressList, deleteAddress, setAddressDefault} from '@/config/api'
   import {mapState} from 'vuex'
   import {InfiniteScroll, Toast, MessageBox} from 'mint-ui'
+
+  Vue.use(InfiniteScroll)
 
   export default {
     data() {
@@ -49,19 +58,21 @@
     },
     methods: {
       getAddressList: function () {
-        getAddressList({
-          openid: this.openid,
-          page: this.page,
-          pagesize: this.pageSize
-        }).then(res => {
-          if (res.status === 0) {
-            this.infinate = res.obj.length === this.pageSize
-            this.addressList.push.apply(this.addressList, res.obj)
-            this.page++
-          } else {
-            Toast(res.message ? res.message : '请求错误')
-          }
-        })
+        if (this.infinate) {
+          getAddressList({
+            openid: this.openid,
+            page: this.page,
+            pagesize: this.pageSize
+          }).then(res => {
+            if (res.status === 0) {
+              this.infinate = res.obj.length === this.pageSize
+              this.addressList.push.apply(this.addressList, res.obj)
+              this.page++
+            } else {
+              Toast(res.message ? res.message : '请求错误')
+            }
+          })
+        }
       },
       loadMore: function () {
         let _this = this
@@ -88,6 +99,22 @@
           })
         }).catch(res => {
         })
+      },
+      setAddressDefault: function (id) {
+        let oldid = this.addressList[this.$refs.active[0].getAttribute('data-id')].id
+        if (oldid !== id) {
+          setAddressDefault({
+            newid: id,
+            oldid: oldid,
+            openid: this.openid
+          }).then(res => {
+            if (res.status === 0) {
+              Toast('设置成功')
+            } else {
+              Toast(res.message ? res.message : '请求错误')
+            }
+          })
+        }
       }
     },
     mounted() {
@@ -100,6 +127,7 @@
   #address-list {
     background-color: #f5f5f5;
     min-height: 100vh;
+    overflow: hidden;
     .top {
       position: fixed;
       top: 0;
@@ -124,7 +152,7 @@
       }
     }
     .bottom {
-      margin-top: 40px;
+      margin: 40px 0 52px;
       overflow: hidden;
       .addresses {
         li {

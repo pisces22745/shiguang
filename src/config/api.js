@@ -78,3 +78,21 @@ export const getAddressList = params => {
 export const deleteAddress = params => {
   return axios.get(`${base}/a/delete`, {params: params}).then(res => res.data)
 }
+// 设置默认地址
+export const setAddressDefault = params => {
+  return axios.get(`${base}/a/default`, {params: params}).then(res => res.data)
+}
+// 添加地址
+export const addAddress = params => {
+  return axios.post(`${base}/a/add`, params).then(res => res.data)
+}
+
+// 获取地址详细
+export const getAddress = params => {
+  return axios.get(`${base}/a/address`, {params: params}).then(res => res.data)
+}
+
+// 修改地址信息
+export const updateAddress = params => {
+  return axios.post(`${base}/a/update`, params).then(res => res.data)
+}

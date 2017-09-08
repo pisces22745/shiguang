@@ -173,7 +173,6 @@
       .cover {
         position: relative;
         width: 1.75rem;
-        height: 2.5rem;
         margin: 0 auto 30px;
         padding-top: 20px;
         img {
