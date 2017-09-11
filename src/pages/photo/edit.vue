@@ -258,4 +258,8 @@
   .template-lj {
     height: 4.65rem;
   }
+
+  .template-sq {
+    height: 3.49rem;
+  }
 </style>

@@ -96,3 +96,8 @@ export const getAddress = params => {
 export const updateAddress = params => {
   return axios.post(`${base}/a/update`, params).then(res => res.data)
 }
+
+// 生成订单
+export const createOrder = params => {
+  return axios.post(`${base}/o/paid`, params).then(res => res.data)
+}

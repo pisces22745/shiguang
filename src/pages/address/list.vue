@@ -2,7 +2,8 @@
   <section id="address-list">
     <div class="top clearfix">
       <span class="icon-back fl" @click="$router.go(-1)"></span>
-      <span class="title">地址管理</span>
+      <span class="title">{{title}}</span>
+      <span>确定</span>
     </div>
     <div class="bottom">
       <div class="none" v-if="addressList.length===0"></div>
@@ -47,13 +48,17 @@
         page: 1,
         pageSize: 10,
         loading: false,
-        infinate: true
+        infinate: true,
+        title: ''
       }
     },
     computed: {
       ...mapState(['userInfo']),
       openid: function () {
         return this.userInfo.openid
+      },
+      type: function () {
+        return this.$router.currentRoute.query.type
       }
     },
     methods: {
@@ -115,9 +120,13 @@
             }
           })
         }
+      },
+      getTitle: function () {
+        this.title = !this.type ? '选择收货地址' : '地址管理'
       }
     },
     mounted() {
+      this.getTitle()
       this.getAddressList()
     }
   }

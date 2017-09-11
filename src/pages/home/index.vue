@@ -234,7 +234,7 @@
               path: 'picture',
               query: {
                 openid: this.openid,
-                type: item.type,
+                type: item.bookType,
                 gid: res.obj.galleryid,
                 beforeid: res.obj.id,
                 pagetype: 2,

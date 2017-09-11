@@ -16,7 +16,7 @@
           <router-link :to="{path:'coupon'}">我的优惠券</router-link>
         </li>
         <li class="address">
-          <router-link :to="{path:'address'}">我的地址</router-link>
+          <router-link :to="{path:'address',query:{type:'manage'}}">我的地址</router-link>
         </li>
       </ul>
     </div>
