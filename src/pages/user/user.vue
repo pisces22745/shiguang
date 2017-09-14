@@ -94,7 +94,7 @@
           }
         })
       },
-      deleteAlbum(id, index) {
+      deleteAlbum: function (id, index) {
         let _this = this
         MessageBox.confirm('确定删除相册?').then(action => {
           deleteAlbum({

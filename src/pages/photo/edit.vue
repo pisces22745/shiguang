@@ -251,12 +251,20 @@
 
 </style>
 <style>
+  .template {
+    height: 4.87rem;
+  }
+
   .tmp-new {
     height: 4.92rem;
   }
 
   .template-lj {
     height: 4.65rem;
+  }
+
+  .template-sq {
+    height: 3.49rem;
   }
 
   .template-sq {

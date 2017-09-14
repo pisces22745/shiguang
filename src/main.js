@@ -12,6 +12,7 @@ import 'mint-ui/lib/style.css'
 import '@/style/base/common.less'
 import '@/util/fontset'
 import VueCookie from 'vue-cookie'
+import 'qiniu-js'
 // Tell Vue to use the plugin
 Vue.use(VueCookie)
 Vue.config.productionTip = false
@@ -34,6 +35,11 @@ router.beforeEach(function (to, from, next) {
         next('qrcode')
       }
     }
+  }
+})
+router.afterEach((to, from, next) => {
+  if (from.name !== 'picture') {
+    window.scrollTo(0, 0)
   }
 })
 

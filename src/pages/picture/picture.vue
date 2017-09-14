@@ -6,7 +6,9 @@
     <div class="middle">
       <p>为保证照片书视觉效果，建议您将照片美颜哦。</p>
       <p><span>{{selected.length}}</span><i class="icon-trash" :class="{active:selected.length>0}"></i></p>
-      <button>上传照片</button>
+      <div id="container">
+        <button id="btn-upload">上传照片</button>
+      </div>
     </div>
     <div class="bottom">
       <ul class="date-list">
@@ -20,7 +22,6 @@
             <li v-for="(picture,indexP) in datepic.picList" :key="picture.id">
               <img :src="obj.baseurl+openid+'/'+picture.id+'?'+obj.thumbset+'&'+picture.token+picture.key"
                    alt="">
-
               <span class="icon-select" :class="{active:picture.active}"
                     @click="activePic($event,picture)"></span>
             </li>
@@ -33,13 +34,13 @@
 </template>
 <script>
   import Vue from 'vue'
-  import {getPicList, createPhotoList} from '@/config/api'
-  import {MessageBox, Toast, Lazyload} from 'mint-ui'
+  import {getPicList, createPhotoList, getToken} from '@/config/api'
+  import {Toast, Lazyload} from 'mint-ui'
   import {mapState} from 'vuex'
 
-  Vue.use(Lazyload);
+  Vue.use(Lazyload)
   export default {
-    data() {
+    data: function () {
       return {
         picNum: 0,
         selected: [],
@@ -47,15 +48,7 @@
         obj: {},
         page: 1,
         pageSize: 16,
-        activeBtn: false,
-        list: [
-          'http://fuss10.elemecdn.com/b/18/0678e57cb1b226c04888e7f244c20jpeg.jpeg',
-          'http://fuss10.elemecdn.com/3/1e/42634e29812e6594c98a89e922c60jpeg.jpeg',
-          'http://fuss10.elemecdn.com/1/c5/95c37272d3e554317dcec1e17a9f5jpeg.jpeg',
-          'http://fuss10.elemecdn.com/7/85/e478e4b26af74f4539c79f31fde80jpeg.jpeg',
-          'http://fuss10.elemecdn.com/b/df/b630636b444346e38cef6c59f6457jpeg.jpeg',
-          'http://fuss10.elemecdn.com/7/a5/596ab03934612236f807b92906fd8jpeg.jpeg'
-        ]
+        activeBtn: false
       }
     },
     computed: {
@@ -102,29 +95,31 @@
         })
       },
       getPhotoList: function () {
-        createPhotoList({
-          gid: this.gid,
-          type: this.type,
-          openid: this.openid,
-          beforeid: this.beforeid,
-          pagetype: this.pagetype, // 页面类型：1封面，2普通页面
-          ptype: this.temptype, // 模板类型：1普通模板，2文字模板，3图片模板
-          pics: this.selected,
-          pretempid: this.pretempid, // 前一个页面的模板id
-          nexttempid: this.nexttempid // 后一个页面的模板id
-        }).then(res => {
-          if (res.status === 0) {
-            this.$router.push({path: '/edit', query: {gid: this.gid, type: this.type}})
-          } else {
-            Toast(res.message ? res.message : '请求错误')
-          }
-        })
+        if (this.selected.length > 0) {
+          createPhotoList({
+            gid: this.gid,
+            type: this.type,
+            openid: this.openid,
+            beforeid: this.beforeid,
+            pagetype: this.pagetype, // 页面类型：1封面，2普通页面
+            ptype: this.temptype, // 模板类型：1普通模板，2文字模板，3图片模板
+            pics: this.selected,
+            pretempid: this.pretempid, // 前一个页面的模板id
+            nexttempid: this.nexttempid // 后一个页面的模板id
+          }).then(res => {
+            if (res.status === 0) {
+              this.$router.push({path: '/edit', query: {gid: this.gid, type: this.type}})
+            } else {
+              Toast(res.message ? res.message : '请求错误')
+            }
+          })
+        }
       },
       activePic: function ($event, picture) {
         if ($event.target.className.indexOf('active') > 0) {
           $event.target.className = 'icon-select'
           let index = this.selected.findIndex(function (element) {
-            return element.url === picture.id;
+            return element.url === picture.id
           })
           this.selected.splice(index, 1)
         } else {
@@ -134,7 +129,6 @@
             url: picture.id
           })
         }
-
       },
       selectAll: function () {
         this.selectAllFlag = !this.selectAllFlag
@@ -143,23 +137,131 @@
           for (let i = 0; i < domList.length; i++) {
             domList[i].className = 'icon-select active'
           }
+          for (let i = 0; i < this.obj.datepics.length; i++) {
+            for (let j = 0; j < this.obj.datepics[i].picList.length; j++) {
+              let pic = this.obj.datepics[i].picList[j]
+              this.selected.push({
+                hov: pic.hov,
+                url: pic.id
+              })
+            }
+          }
         } else {
           for (let i = 0; i < domList.length; i++) {
             domList[i].className = 'icon-select'
+            this.selected.length = 0
           }
         }
-        for (let i = 0; i < this.obj.datepics.length; i++) {
-          for (let j = 0; j < this.obj.datepics[i].picList.length; j++) {
-            let pic = this.obj.datepics[i].picList[j]
-            this.selected.push({
-              hov: pic.hov,
-              url: pic.id
-            })
+      },
+      uploader: function (uptoken) {
+        var uploader = Qiniu.uploader({
+          disable_statistics_report: false,   // 禁止自动发送上传统计信息到七牛，默认允许发送
+          runtimes: 'html5,flash,html4',      // 上传模式,依次退化
+          browse_button: 'btn-upload',         // 上传选择的点选按钮，**必需**
+          container: 'container',             // 上传区域 DOM ID，默认是 browser_button 的父元素，
+          multi_selection: true,
+          resize: {quality: 75, preserve_headers: false},
+          // 在初始化时，uptoken, uptoken_url, uptoken_func 三个参数中必须有一个被设置
+          // 切如果提供了多个，其优先级为 uptoken > uptoken_url > uptoken_func
+          // 其中 uptoken 是直接提供上传凭证，uptoken_url 是提供了获取上传凭证的地址，如果需要定制获取 uptoken 的过程则可以设置 uptoken_func
+          // uptoken : '<Your upload token>', // uptoken 是上传凭证，由其他程序生成
+          // uptoken_url: '/uptoken',         // Ajax 请求 uptoken 的 Url，**强烈建议设置**（服务端提供）
+          // uptoken_func: function(file){    // 在需要获取 uptoken 时，该方法会被调用
+          //    // do something
+          //    return uptoken;
+          // },
+          uptoken: uptoken,
+          get_new_uptoken: false,             // 设置上传文件的时候是否每次都重新获取新的 uptoken
+          // downtoken_url: '/downtoken',
+          // Ajax请求downToken的Url，私有空间时使用,JS-SDK 将向该地址POST文件的key和domain,服务端返回的JSON必须包含`url`字段，`url`值为该文件的下载地址
+          // unique_names: true,              // 默认 false，key 为文件名。若开启该选项，JS-SDK 会为每个文件自动生成key（文件名）
+          // save_key: true,                  // 默认 false。若在服务端生成 uptoken 的上传策略中指定了 `save_key`，则开启，SDK在前端将不对key进行任何处理
+          domain: 'http://imglib.hzaiyin.cn/',     // bucket 域名，下载资源时用到，如：'http://xxx.bkt.clouddn.com/' **必需**
+          max_file_size: '100mb',             // 最大文件体积限制
+          flash_swf_url: 'path/of/plupload/Moxie.swf',  // 引入 flash,相对路径
+          max_retries: 3,                     // 上传失败最大重试次数
+          dragdrop: false,                     // 开启可拖曳上传
+          drop_element: 'container',          // 拖曳上传区域元素的 ID，拖曳文件或文件夹后可触发上传
+          chunk_size: '4mb',                  // 分块上传时，每块的体积
+          auto_start: true,                   // 选择文件后自动上传，若关闭需要自己绑定事件触发上传,
+          // x_vars : {
+          //    自定义变量，参考http://developer.qiniu.com/docs/v6/api/overview/up/response/vars.html
+          //    'time' : function(up,file) {
+          //        var time = (new Date()).getTime();
+          // do something with 'time'
+          //        return time;
+          //    },
+          //    'size' : function(up,file) {
+          //        var size = file.size;
+          // do something with 'size'
+          //        return size;
+          //    }
+          // },
+          init: {
+            'FilesAdded': function (up, files) {
+              plupload.each(files, function (file) {
+                // 文件添加进队列后,处理相关的事情
+                console.log(11111111 + file)
+              })
+            },
+            'BeforeUpload': function (up, file) {
+              // 每个文件上传前,处理相关的事情
+            },
+            'UploadProgress': function (up, file) {
+              // 每个文件上传时,处理相关的事情
+              console.log(22222222222 + file)
+            },
+            'FileUploaded': function (up, file, info) {
+              // 每个文件上传成功后,处理相关的事情
+              // 其中 info.response 是文件上传成功后，服务端返回的json，形式如
+              // {
+              //    "hash": "Fh8xVqod2MQ1mocfI4S4KpRL6D98",
+              //    "key": "gogopher.jpg"
+              //  }
+              // 参考http://developer.qiniu.com/docs/v6/api/overview/up/response/simple-response.html
+
+              // var domain = up.getOption('domain');
+              // var res = parseJSON(info.response);
+              // var sourceLink = domain + res.key; 获取上传成功后的文件的Url
+            },
+            'Error': function (up, err, errTip) {
+              // 上传出错时,处理相关的事情
+            },
+            'UploadComplete': function () {
+              // 队列文件处理完毕后,处理相关的事情
+              Toast('上传成功')
+            }
+//            ,
+//            'Key': function (up, file) {
+            // 若想在前端对每个文件的key进行个性化处理，可以配置该函数
+            // 该配置必须要在 unique_names: false , save_key: false 时才生效
+
+//              var key = ''
+            // do something with key here
+//              return key
+//            }
           }
-        }
+        })
+        // domain 为七牛空间（bucket)对应的域名，选择某个空间后，可通过"空间设置->基本设置->域名设置"查看获取
+        // uploader 为一个 plupload 对象，继承了所有 plupload 的方法，参考http://plupload.com/docs
+      },
+      init: function () {
+        getToken({
+          openid: this.openid
+        }).then(res => {
+          if (res.status === 0) {
+            this.uploader(res.obj)
+          } else {
+            Toast(res.message ? res.message : '请求错误')
+          }
+        })
       }
     },
     mounted() {
+      let _this = this
+      setTimeout(function () {
+        _this.init()
+      }, 200)
       this.getPicList()
     }
   }
@@ -190,7 +292,7 @@
     }
     .middle {
       position: fixed;
-      top: 41px;
+      top: 40px;
       left: 0;
       z-index: 1;
       width: 100%;
